@@ -1,0 +1,27 @@
+# Ignore macOS system files
+.DS_Store
+
+# Ignore build files and directories
+**/build/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/Makefile
+**/Makefile2
+**/*.o
+**/*.d
+**/*.ts
+**/*.log
+**/*.marks
+**/cmake_clean.cmake
+
+
+# Ignore Git-specific files (excluding the .git/ folder itself)
+.git/**
+!.gitignore
+
+# Ignore other generated files
+**/progress.make
+**/flags.make
+**/build.make
+
