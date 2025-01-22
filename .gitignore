@@ -25,3 +25,5 @@
 **/flags.make
 **/build.make
 
+__pycache__/
+
