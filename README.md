@@ -59,9 +59,11 @@ This is acheived through totation matrices:
 The current vertices and the rotation matrixes are dot producted with each other given specific angles:
 
 ![Rotation Matrices](assets/rotationMatrices.png)
+
 It can also be scaled with the scale Matrix:
 
 ![Scale Matrix](assets/scaleMatrix.png)
+
 #### Communication:
 Now, the Rotation of the cube is controlled by the receiveData() method. This method takes data recived, and parses it and determines the rotation increments based on that.
 ![receiveData()](assets/receiveData.png)
@@ -93,6 +95,8 @@ https://github.com/user-attachments/assets/812ebb77-9d61-42b7-b5d7-ba179adf2a43
 
 Pull requests are welcome. For major changes, please open an issue first
 to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
 
 ## License
 
