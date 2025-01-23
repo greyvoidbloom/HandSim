@@ -40,10 +40,7 @@ class cube3D:
                     (4,5),(5,6),(6,7),(7,4),
                     (0,4),(1,5),(2,6),(3,7),
                     ]
-        self.innerLines=[(0,7),(0,5),(0,2),
-                    (1,4),(1,3),(1,6),
-                    (2,5),(2,7),
-                    (3,6),(3,4),(6,4),(5,7)]
+        self.innerLines=[(0,2),(2,7),(7,5),(0,5),]
         pygame.init()
         self.screen = pygame.display.set_mode((self.screenWidth,self.screenHeight))
         pygame.display.set_caption(self.heading)
@@ -76,6 +73,9 @@ class cube3D:
             print("Receiver shutting down")
         finally:
             self.sock.close()
+    def checkRotationStop(self):
+        if time.time() - self.lastReceivedTime > self.rotationTimeout:
+            self.rotationIncrementX, self.rotationIncrementY, self.rotationIncrementZ = 0,0,0
             
     def projectVertices(self,vertices):
         vertices = np.array(vertices)
@@ -137,6 +137,7 @@ class cube3D:
                         self.running = False
             self.rotationAngleX +=self.rotationIncrementX
             self.rotationAngleY +=self.rotationIncrementY
+            self.checkRotationStop()
             rotatedVertices = self.rotateY(vertices=self.vertices,angle=self.rotationAngleY)
             rotatedVertices = self.rotateX(vertices=rotatedVertices,angle=self.rotationAngleX)
             projectedPoints = self.projectVertices(vertices=rotatedVertices)

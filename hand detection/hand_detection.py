@@ -94,8 +94,8 @@ class HandTracker:
             
             # Process frame and update coordinates
             processedFrame = self.processFrame(frame=frame)
-            #self.drawCuboid(frame=processedFrame, startFinger=self.thumbFinger, endFinger=self.indexFinger, color=self.cubeColor)
-            self.drawIdentifiers(frame=processedFrame,startFinger=self.thumbFinger,endFinger=self.indexFinger)
+            self.drawCuboid(frame=processedFrame, startFinger=self.thumbFinger, endFinger=self.indexFinger, color=self.cubeColor)
+            #self.drawIdentifiers(frame=processedFrame,startFinger=self.thumbFinger,endFinger=self.indexFinger)
             # Send the updated coordinates (thumb and index finger)
             self.sendCoords(self.thumbFinger, self.indexFinger)
 
