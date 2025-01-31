@@ -40,7 +40,7 @@ class cube3D:
                     (4,5),(5,6),(6,7),(7,4),
                     (0,4),(1,5),(2,6),(3,7),
                     ]
-        self.innerLines=[(0,2),(2,7),(7,5),(0,5),]
+        self.innerLines=[(0,2),(2,7),(7,5),(5,0),]
         pygame.init()
         self.screen = pygame.display.set_mode((self.screenWidth,self.screenHeight))
         pygame.display.set_caption(self.heading)
