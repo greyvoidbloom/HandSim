@@ -23,16 +23,18 @@ class HandTracker:
         self.cTime = 0
         self.thumbFinger = ()
         self.indexFinger = ()
-        self.squareColor = (250,250,250)
+        self.squareColor = (0,240,0)
         self.cubeColor = (0, 0, 255)
         self.squareThickness = 3
+        self.client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.server_address = ("localhost", 5555)
     def sendCoords(self, thumbFinger, indexFinger):
-        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        server_address = ("localhost", 5555)
         if thumbFinger and indexFinger:
             data = f"{thumbFinger},{indexFinger}"
             #print(data)
-            client.sendto(data.encode(), server_address)
+            self.client.sendto(data.encode(), self.server_address)
+    def drawIdentifiers(self,frame,startFinger,endFinger):
+        cv2.line(frame, startFinger, endFinger, self.squareColor, self.squareThickness) 
     def drawCuboid(self, frame, startFinger, endFinger, color):
         if startFinger and endFinger:
             cubelen = int(math.dist(startFinger, endFinger) / 1.73205080757)
@@ -63,10 +65,8 @@ class HandTracker:
         frame = cv2.flip(frame, self.flipMetric)
         frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = self.hands.process(frameRGB)
-        
         self.thumbFinger = None
         self.indexFinger = None
-        
         if results.multi_hand_landmarks:
             for handLms in results.multi_hand_landmarks:
                 for id, lm in enumerate(handLms.landmark):
@@ -77,9 +77,7 @@ class HandTracker:
                             self.thumbFinger = (cx, cy)
                         if id == 8:
                             self.indexFinger = (cx, cy)
-
         return frame
-
     def fpsCalc(self):
         self.cTime = time.time()
         fps = int(1 / (self.cTime - self.pTime))
@@ -94,8 +92,8 @@ class HandTracker:
             
             # Process frame and update coordinates
             processedFrame = self.processFrame(frame=frame)
-            self.drawCuboid(frame=processedFrame, startFinger=self.thumbFinger, endFinger=self.indexFinger, color=self.cubeColor)
-            #self.drawIdentifiers(frame=processedFrame,startFinger=self.thumbFinger,endFinger=self.indexFinger)
+            #self.drawCuboid(frame=processedFrame, startFinger=self.thumbFinger, endFinger=self.indexFinger, color=self.cubeColor)
+            self.drawIdentifiers(frame=processedFrame,startFinger=self.thumbFinger,endFinger=self.indexFinger)
             # Send the updated coordinates (thumb and index finger)
             self.sendCoords(self.thumbFinger, self.indexFinger)
 

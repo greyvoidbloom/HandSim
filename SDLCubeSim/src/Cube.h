@@ -15,12 +15,9 @@ private:
 
 public:
     Cube(float fov, int screenWidth, int screenHeight);
-
     void rotateX(float angle);
     void rotateY(float angle);
-
     void renderCube(SDL_Renderer* renderer) const;
-
     const std::vector<Edge>& getVertices() const;
 };
 

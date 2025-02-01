@@ -1,20 +1,20 @@
 #include <iostream>
 #include <SDL2/SDL.h>
+#include <cmath>
+#include <fcntl.h>
+#include <unistd.h>
 #include "SDLManager.h"
 #include "Cube.h"
 #include "udpReceiver.h"
+#include "RotationControls.h"
 #define PORT 5555
 #define BUFFER_SIZE 1024
-void handleRotationSpeed(int* thumbFinger, int* indexFinger,float *rotationSpeedX, float *rotationSpeedY){
-    int dist =static_cast<int>(sqrt(pow((thumbFinger[0] - indexFinger[0]),2) + pow((thumbFinger[1] - indexFinger[1]),2))/10);
-    //std::cout << "distance: "<< dist <<std::endl ;
-    *rotationSpeedY = dist;
-}
-void handleRotationDirection(int* thumbFinger, int* indexFinger,float *rotationSpeedX, float *rotationSpeedY){
-    int moveDirControl = thumbFinger[0] - indexFinger[0];
-    (moveDirControl<0) ? *rotationSpeedY = -*rotationSpeedY : *rotationSpeedY = *rotationSpeedY ;
-}
+
+
+
+
 int main() {
+    //std::cout <<M_PI_2<<std::endl;
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {
         std::cerr << "Socket creation failed!" << std::endl;
@@ -31,61 +31,70 @@ int main() {
         close(sockfd);
         return -1;
     }
-    // Make the socket non-blocking
-    fcntl(sockfd, F_SETFL, O_NONBLOCK);
+    fcntl(sockfd, F_SETFL, O_NONBLOCK); // Set socket to non-blocking
     char buffer[BUFFER_SIZE];
     socklen_t clientAddrLen = sizeof(clientAddr);
     std::cout << "Server listening on port " << PORT << "..." << std::endl;
+
     try {
         SDLManager sdl("Chopped SDL Cube");
-        Cube choppedCube(400,800,600);
-        float angleX, angleY = 0.0f;
-        float rotationSpeedX = 1.0f;
-        float rotationSpeedY = 1.0f;
+        RotationHandler spincontrols;
+        Cube choppedCube(400, 800, 600);
+        bool receivingData = false;
         int thumbFinger[2] = {0, 0};
         int indexFinger[2] = {0, 0};
         bool running = true;
-
         SDL_Event event;
-        Uint32 prevtime = SDL_GetTicks();
 
         while (running) {
-            Uint32 curTime = SDL_GetTicks();
-            float deltaTime = (curTime - prevtime) /1000.f;
-            prevtime = curTime;
+            Uint32 frameStart = SDL_GetTicks();
             bool dataReceived = false;
-            if (receiveData(sockfd, buffer, clientAddr,clientAddrLen, thumbFinger, indexFinger)) {
-                handleRotationSpeed(thumbFinger,indexFinger,&rotationSpeedX,&rotationSpeedY);
-                handleRotationDirection(thumbFinger,indexFinger,&rotationSpeedX,&rotationSpeedY);
-                dataReceived = true;
+
+            // Receive UDP data
+            if (receiveData(sockfd, buffer, clientAddr, clientAddrLen, thumbFinger, indexFinger)) {
+                //speen
+                receivingData = true;
+                spincontrols.enableGestureRotation();
+                spincontrols.handleXvelocity(thumbFinger,indexFinger);
+                spincontrols.handleXDirection(thumbFinger,indexFinger);
+            }
+            else{
+                receivingData = false;
             }
             // Handle SDL events
             while (SDL_PollEvent(&event)) {
                 if (event.type == SDL_QUIT) {
-                    running = false;  
+                    running = false;
                 }
+                else if (event.type == SDL_KEYDOWN) {
+                    if (event.key.keysym.sym == SDLK_d && !spincontrols.isKeyboardRotationAllowed()) {
+                        spincontrols.enableKeyboardRotation();
+                    }}
             }
+            
+            //std::cout << spincontrols.getXangle() <<std::endl;
+            if(spincontrols.isKeyboardRotationAllowed()){
+                spincontrols.rotateLeft(4.0f);
+            }
+            if(spincontrols.isGestureRotationAllowed()){
+                spincontrols.gestureControlX(&receivingData);
+            }
+            choppedCube.rotateY(spincontrols.getXangle());
             SDL_SetRenderDrawColor(sdl.getRenderer(), 255, 255, 255, 255);
             SDL_RenderClear(sdl.getRenderer());
-            //std::cout << rotationSpeedY << std::endl;
-            angleY = rotationSpeedY * deltaTime;
-            if (dataReceived){
-                //choppedCube.rotateX(angleX);
-                choppedCube.rotateY(angleY);
-            }
-
-           //std::cout <<"angle: "<<angleX <<"increment: "<<angleXincrement<<std::endl;
 
             choppedCube.renderCube(sdl.getRenderer());
             SDL_RenderPresent(sdl.getRenderer());
-            SDL_Delay(1);
-            //SDL_Delay(16);
+            //frame rate stabilization
+            Uint32 frameTime = SDL_GetTicks() - frameStart;
+            if (frameTime < 16) {
+                SDL_Delay(16 - frameTime);
+            }
         }
     }
     catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
     close(sockfd);
-
     return 0;
 }
