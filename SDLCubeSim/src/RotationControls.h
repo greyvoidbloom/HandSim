@@ -22,7 +22,7 @@ public:
     void handleXvelocity(int* thumbFinger, int* indexFinger);
     void handleXDirection(int* thumbFinger, int* indexFinger);
     void gestureControlX(bool *dataReceived);
-    void rotateLeft(float speed);
+    void rotateHorizontal(float speed);
 
 };
 #endif

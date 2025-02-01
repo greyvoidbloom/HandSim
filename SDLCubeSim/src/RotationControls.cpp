@@ -25,7 +25,7 @@
             }
         } 
     }
-    void RotationHandler::rotateLeft(float speed) {
+    void RotationHandler::rotateHorizontal(float speed) {
         if (!isKeyboardRotationAllowed()) return;
         float step = -speed * FIXED_DELTA_TIME;
         float remainingRotation = degreeNinety - std::abs(completedRotation);
@@ -39,5 +39,5 @@
         } else {
             angleX = step;
         }
-        std::cout <<"angleX:"<<angleX<< " completed rotation: " << completedRotation << "/" << degreeNinety << std::endl;
+        std::cout <<"step: "<<step<< " completed rotation: " << completedRotation << "/" << degreeNinety << std::endl;
     }

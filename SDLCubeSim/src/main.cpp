@@ -10,11 +10,7 @@
 #define PORT 5555
 #define BUFFER_SIZE 1024
 
-
-
-
 int main() {
-    //std::cout <<M_PI_2<<std::endl;
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {
         std::cerr << "Socket creation failed!" << std::endl;
@@ -44,6 +40,7 @@ int main() {
         int thumbFinger[2] = {0, 0};
         int indexFinger[2] = {0, 0};
         bool running = true;
+        int speed = 0;
         SDL_Event event;
 
         while (running) {
@@ -69,12 +66,17 @@ int main() {
                 else if (event.type == SDL_KEYDOWN) {
                     if (event.key.keysym.sym == SDLK_d && !spincontrols.isKeyboardRotationAllowed()) {
                         spincontrols.enableKeyboardRotation();
-                    }}
+                        speed = 7;
+                    }
+                    if (event.key.keysym.sym == SDLK_a && !spincontrols.isKeyboardRotationAllowed()) {
+                        spincontrols.enableKeyboardRotation();
+                        speed = -7;
+                    }
+                    }
             }
-            
             //std::cout << spincontrols.getXangle() <<std::endl;
             if(spincontrols.isKeyboardRotationAllowed()){
-                spincontrols.rotateLeft(4.0f);
+                spincontrols.rotateHorizontal(speed);
             }
             if(spincontrols.isGestureRotationAllowed()){
                 spincontrols.gestureControlX(&receivingData);
