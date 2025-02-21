@@ -20,8 +20,11 @@ public:
     void enableGestureRotation();
     void disableGestureRotation();
     void handleXvelocity(int* thumbFinger, int* indexFinger);
+    void handleYvelocity(int* thumbFinger, int* indexFinger);
     void handleXDirection(int* thumbFinger, int* indexFinger);
+    void handleYDirection(int* thumbFinger, int* indexFinger);
     void gestureControlX(bool *dataReceived);
+    void gestureControlY(bool *dataReceived);
     void rotateHorizontal(float speed);
 
 };

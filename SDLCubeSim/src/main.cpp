@@ -53,7 +53,9 @@ int main() {
                 receivingData = true;
                 spincontrols.enableGestureRotation();
                 spincontrols.handleXvelocity(thumbFinger,indexFinger);
+                spincontrols.handleYvelocity(thumbFinger,indexFinger);
                 spincontrols.handleXDirection(thumbFinger,indexFinger);
+                spincontrols.handleYDirection(thumbFinger,indexFinger);
             }
             else{
                 receivingData = false;
@@ -64,6 +66,7 @@ int main() {
                     running = false;
                 }
                 else if (event.type == SDL_KEYDOWN) {
+                    if (event.key.keysym.sym == SDLK_q){running = false;}
                     if (event.key.keysym.sym == SDLK_d && !spincontrols.isKeyboardRotationAllowed()) {
                         spincontrols.enableKeyboardRotation();
                         speed = 7;
@@ -79,8 +82,10 @@ int main() {
                 spincontrols.rotateHorizontal(speed);
             }
             if(spincontrols.isGestureRotationAllowed()){
+                spincontrols.gestureControlY(&receivingData);
                 spincontrols.gestureControlX(&receivingData);
             }
+            choppedCube.rotateX(spincontrols.getYangle());
             choppedCube.rotateY(spincontrols.getXangle());
             SDL_SetRenderDrawColor(sdl.getRenderer(), 255, 255, 255, 255);
             SDL_RenderClear(sdl.getRenderer());

@@ -2,6 +2,7 @@
 .DS_Store
 
 # Ignore build files and directories
+.vscode/
 **/build/
 **/CMakeFiles/
 **/CMakeCache.txt

@@ -15,7 +15,22 @@
         float dist = (sqrt(pow((thumbFinger[0] - indexFinger[0]), 2) + pow((thumbFinger[1] - indexFinger[1]), 2)) / 10);
         relativeVelocityX = std::max(0.1f,dist);
     }
+    void RotationHandler::handleYvelocity(int* thumbFinger, int* indexFinger){
+        float dist = (sqrt(pow((thumbFinger[0] - indexFinger[0]), 2) + pow((thumbFinger[1] - indexFinger[1]), 2)) / 10);
+        relativeVelocityY = std::max(0.1f,dist);
+
+    }
     void RotationHandler::handleXDirection(int* thumbFinger, int* indexFinger){relativeVelocityX = ((thumbFinger[0] - indexFinger[0]) < 0) ? -relativeVelocityX : relativeVelocityX;}
+    void RotationHandler::handleYDirection(int* thumbFinger, int* indexFinger){relativeVelocityY = ((thumbFinger[1] - indexFinger[1]) < 0) ? -relativeVelocityY : relativeVelocityY;}
+    void RotationHandler::gestureControlY(bool *dataReceived){
+        if (*dataReceived) {angleY = relativeVelocityY * FIXED_DELTA_TIME;} 
+        else {
+            angleY *= 0.9f;
+            if (std::abs(angleY) < 0.01f) { 
+                angleY = 0.0f;
+            }
+        }  
+    }
     void RotationHandler::gestureControlX(bool *dataReceived){
         if (*dataReceived) {angleX = relativeVelocityX * FIXED_DELTA_TIME;} 
         else {
